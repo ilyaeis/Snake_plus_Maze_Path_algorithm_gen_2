@@ -1,0 +1,9 @@
+{
+    "maze_width_in_blocks": 25,
+    "maze_height_in_blocks": 25,
+    "blocks_in_cell": 5,
+    "maze_cell_size_px": 5,
+
+    "screen_width_px": 500,
+    "screen_height_px": 500
+}
