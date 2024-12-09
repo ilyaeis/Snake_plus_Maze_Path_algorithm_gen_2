@@ -40,3 +40,11 @@ Contains the `Maze` class for maze creation, its algorithm visualisation, and 
 	- `self.blocks_in_cell: int`
 	- `self.maze: List[List['Cell']]`
 	- `self.start: Cell, self.end: Cell`
+
+# Ideas to add
+1. Make noise height map for river generation as well as to make the background not just black.
+2. Make forest eclipses on the map height map, generate trees in the eclipses (same for lava, lava/water and forest do not overlap).
+3. if water and lava overlap, makes terrain block.
+4. make fog, or cells which are not visited / too far away not seen for user. 
+5. make jump mechanic for snake, to jump throw river and lava.
+ 
