@@ -1,9 +1,56 @@
 {
-    "maze_width_in_blocks": 25,
-    "maze_height_in_blocks": 25,
-    "blocks_in_cell": 5,
-    "maze_cell_size_px": 5,
-
+    
+    "maze_width_in_cells": 20,
+    "maze_height_in_cells": 20,
     "screen_width_px": 500,
-    "screen_height_px": 500
+    "screen_height_px": 500,
+
+    "blocks_in_cell": 5,
+    "block_size_px": 20,
+
+    "tree_size": 3,
+
+    "locations": {
+        "lava": {
+            "count": 30,
+            "min_radius_in_blocks": 4,
+            "max_radius_in_blocks": 10,
+            "color": [255, 0, 0],
+            "fill_pct": 0.2,
+            "min_lake_size": 7,
+            "max_lake_size": 12
+        },
+        "forest": {
+            "count": 30,
+            "min_radius_in_blocks": 5,
+            "max_radius_in_blocks": 10,
+            "color": [0, 255, 0],
+            "fill_pct": 0.1
+        }
+    },
+
+    "rivers_data": {
+        "count": 40,
+        "min_distance": 10,
+        "min_length": 25,
+        "max_length": 50,
+        "speed_in_river": 3
+    },
+
+    "colors": {
+        "maze_path": "black",
+        "maze_walls": "white",
+        "lava": [255, 100, 100],
+        "forest": [88, 66, 40],
+        "tree_crown": [150, 255, 150, 240],
+        "river": [100, 100, 255],
+        "terrain": [50, 35, 50],
+        "snake": [10, 100, 10]
+    },
+    "noise_params": {
+        "scale": 0.05,
+        "octaves": 4,
+        "persistence": 0.8,
+        "lacunarity": 1.8
+    }
 }
