@@ -1,4 +1,4 @@
-# Python Snake Game with Maze Generation and Light Simulation
+# Python Snake Game with Maze Generation
 
 ## Overview
 This project is a Python-based game that combines elements of the classic Snake game with maze generation and light simulation. Built using Pygame, it includes various features such as dynamic maze creation, lava lakes, forests, rivers, and light casting (in development).
