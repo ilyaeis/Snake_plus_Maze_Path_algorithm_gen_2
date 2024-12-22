@@ -19,9 +19,6 @@ class Apple:
         self.x, self.y = coord
         self.color: tuple[int, int, int] = self._generate_random_color()
 
-    def __repr__(self) -> str:
-        return f"Apple(x={self.x}, y={self.y}, color={self.color})"
-
     def reposition(self) -> None:
         self.x = random.randint(0, COLS - 1)
         self.y = random.randint(0, ROWS - 1)
@@ -29,7 +26,15 @@ class Apple:
 
     def _generate_random_color(self) -> tuple[int, int, int]:
         return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-
+    
+    def __repr__(self) -> str:
+        return f"Apple(x={self.x}, y={self.y}, color={self.color})"
+    
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Apple):
+            return self.x == other.x and self.y == other.y
+        return False
+    
 class SnakeBodyBlock:
     def __init__(self, coord: tuple[int, int]):
         self.x: int
@@ -58,8 +63,9 @@ class Snake:
 
         self.ghost_mode: bool = False
         self.tp_next_move: bool = False
+        
         self.skip_next_move: bool = False
-        self.move_skip_counter: int = 0
+        self.not_moving_counter: int = 0
 
     def move(self) -> None:
         if self.tp_next_move:
@@ -67,7 +73,7 @@ class Snake:
             return  
         if self.skip_next_move:
             self.skip_next_move = False
-            self.move_skip_counter += 1
+            self.not_moving_counter += 1
             return
         if self.in_river:
             self.river_counter += 1
@@ -81,6 +87,8 @@ class Snake:
         self.body.insert(0, new_head)
         self.body.pop()
 
+        self.not_moving_counter = 0
+
     def grow(self, apple: Apple) -> None:
         last_block: SnakeBodyBlock = self.body[-1]
         self.body.append(SnakeBodyBlock((last_block.x, last_block.y)))
@@ -92,11 +100,24 @@ class Snake:
         else: 
             self.direction = (0, 0)
 
+    def lost(self) -> bool:
+        return self.not_moving_counter > 10
+    
     def check_apple_collision(self, apple: Apple) -> None:
         head: SnakeBodyBlock = self.body[0]
         if int(head.x) == apple.x and int(head.y) == apple.y:
             self.grow(apple)
             apple.reposition()
+
+    def check_apples_collision(self, apples: list[Apple]) -> bool:
+        head: SnakeBodyBlock = self.body[0]
+        for i in range(len(apples)):
+            apple = apples[i]
+            if int(head.x) == apple.x and int(head.y) == apple.y:
+                self.grow(apple)
+                apples.pop(i)
+                return True
+        return False
 
     def check_snake_collision(self, snake_block: Block, next_step_block: Block) -> None:
         head: SnakeBodyBlock = self.body[0]
@@ -160,11 +181,12 @@ class Snake:
         for i in range(1, len(self.body)):
             self.body[i].x = head.x
             self.body[i].y = head.y
+
+        self.not_moving_counter = 0
     
     def can_teleport_to_new_location(self, x: int, y: int) -> bool:
         if x < 0 or y < 0 or x >= self.map_width or y >= self.map_height:
             return False
-        
         return True
 
     def check_pygame_events(self, event: pygame.event.Event) -> None:

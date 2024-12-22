@@ -39,7 +39,8 @@ class Block:
         self.trait: dict[str, bool] = {
             "forest": False,
             "lava": False,
-            "river": False
+            "river": False,
+            "exit": False
         }
         self.x: int = x
         self.y: int = y
