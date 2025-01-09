@@ -203,7 +203,7 @@ class Snake:
                 self.teleport()
             elif event.key == pygame.K_g:
                 self.ghost_mode = not self.ghost_mode
-
+    
     def _generate_random_color(self) -> tuple[int, int, int]:
         return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 

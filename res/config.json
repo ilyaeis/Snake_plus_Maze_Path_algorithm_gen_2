@@ -1,14 +1,14 @@
 {
     
-    "maze_width_in_cells": 20,
-    "maze_height_in_cells": 20,
+    "maze_width_in_cells": 5,
+    "maze_height_in_cells": 5,
     "screen_width_px": 500,
     "screen_height_px": 500,
 
-    "blocks_in_cell": 5,
+    "blocks_in_cell": 10,
     "block_size_px": 20,
 
-    "apple_count": 20,
+    "apple_count": 10,
     "tree_size": 3,
 
     "locations": {

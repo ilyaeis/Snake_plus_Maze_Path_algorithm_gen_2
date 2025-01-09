@@ -6,7 +6,7 @@ import random
 from snake import Snake, SnakeBodyBlock, Apple
 from map import Map
 from gridElements import Block 
-
+from pathSearchers import BFS
 class Game:
     def __init__(self, path: str) -> None:
         self.load_config(path)
@@ -35,13 +35,12 @@ class Game:
         maps_obj: Map = Map(path)
         self.map: list[list[Block]] = maps_obj.map
         start_location: tuple[int, int] = self.find_snake_location()
-        
         if start_location:
             self.snake: Snake = Snake(path, start_location)
         else:
             print("No location to start, please re-start! :)")
             return
-        
+        self.path_searcher = BFS(self.map)
         self.apples: list[Apple] = []
         self.generate_apples(self.apple_count, start_location)
         self.screen: pygame.Surface = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -49,7 +48,9 @@ class Game:
 
     def initialize_canvases(self) -> None:
         self.background_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
+        self.path_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
         self.apple_count_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
+        self.terrain_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
         self.maze_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
         self.apple_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
         self.snake_canvas: pygame.Surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
@@ -144,6 +145,7 @@ class Game:
 
     def update_world_canvas(self) -> None:
         self.background_canvas.fill((0, 0, 0, 0))
+        self.terrain_canvas.fill((0, 0, 0, 0))
         self.maze_canvas.fill((0, 0, 0, 0))
         self.apple_canvas.fill((0, 0, 0, 0))
         self.tree_crown_canvas.fill((0, 0, 0, 0))
@@ -164,6 +166,8 @@ class Game:
                 
                 active_traits: list[str] = block.get_traits()  
                 color: tuple = self.generate_height_color(block)
+                pygame.draw.rect(self.background_canvas, color, (bx + 1, by + 1, self.block_size - 2, self.block_size - 2))
+                
                 if active_traits:
                     if "forest" in active_traits:
                         crown_size: float = self.block_size * self.tree_size
@@ -172,9 +176,7 @@ class Game:
                         pygame.draw.rect(self.tree_base_canvas, self.colors["forest"], (bx + 1, by + 1, self.block_size - 2, self.block_size - 2))
                     for trait in active_traits:
                         color = self.colors[trait]
-                    pygame.draw.rect(self.background_canvas, color, (bx, by, self.block_size, self.block_size))
-                else:
-                    pygame.draw.rect(self.background_canvas, color, (bx + 1, by + 1, self.block_size - 2, self.block_size - 2))
+                    pygame.draw.rect(self.terrain_canvas, color, (bx, by, self.block_size, self.block_size))
 
                 if block.walls["top"]:
                     pygame.draw.line(self.maze_canvas, wall_color, (bx, by), (bx + self.block_size, by), 1)
@@ -243,7 +245,21 @@ class Game:
         text.set_alpha(self.colors["text"][3])
         text_rect = text.get_rect(center=(self.apple_count_canvas.get_width() / 2, self.apple_count_canvas.get_height() / 2))
         self.apple_count_canvas.blit(text, text_rect)
+    
+    def update_path_canvas(self):
+        self.path_canvas.fill((0, 0, 0, 0))
+        if self.path_searcher.path:
+            for block in self.path_searcher.path:
+                color: tuple[int, int, int] = (255, 0, 0, 100)
+                x, y = self.block_pos_relative((block[0], block[1]))
+                pygame.draw.rect(self.path_canvas, color, (x, y, self.block_size, self.block_size))
 
+        elif self.path_searcher.longest_path:
+            for block in self.path_searcher.longest_path:
+                color: tuple[int, int, int] = (255, 0, 0, 100)
+                x, y = self.block_pos_relative((block.x, block.y))
+                pygame.draw.rect(self.path_canvas, color, (x, y, self.block_size, self.block_size))
+        
     def draw_exit(self) -> None:
         if not self.exit_blocks:
             return 
@@ -286,6 +302,9 @@ class Game:
         self.update_apple_count_canvas()
 
         while running:
+            if len(self.path_searcher.path) < 2:
+                self.path_searcher.create_path(self.snake, self.apples)
+                
             self.screen.fill(pygame.Color(self.colors["maze_path"]))
 
             for event in pygame.event.get():
@@ -308,6 +327,7 @@ class Game:
             
             if self.snake.check_apples_collision(self.apples):
                 self.update_apple_count_canvas()
+                self.path_searcher.path = []
             if self.snake.lost():
                 running = False
 
@@ -315,14 +335,17 @@ class Game:
 
             self.update_world_canvas()
             self.update_snake_canvas()
-
+            self.update_path_canvas()
+            
             self.screen.blit(self.background_canvas, (0, 0))
             self.screen.blit(self.apple_count_canvas, (0, 0))
+            self.screen.blit(self.terrain_canvas, (0, 0))
             self.screen.blit(self.snake_canvas, (0, 0))
             self.screen.blit(self.apple_canvas, (0, 0))
             self.screen.blit(self.maze_canvas, (0, 0))
             self.screen.blit(self.tree_crown_canvas, (0, 0))
             self.screen.blit(self.tree_base_canvas, (0, 0))
+            self.screen.blit(self.path_canvas, (0, 0))
             pygame.display.flip()
             clock.tick(5)  
         print("You won!" if won else "You lost!")

@@ -40,7 +40,6 @@ class Block:
             "forest": False,
             "lava": False,
             "river": False,
-            "exit": False
         }
         self.x: int = x
         self.y: int = y
@@ -73,3 +72,9 @@ class Block:
 
     def __hash__(self) -> int:
         return hash((self.x, self.y))
+
+class Node:
+    def __init__(self, position: tuple[int, int], parent=None, depth=0):
+        self.position = position
+        self.parent = parent
+        self.depth = depth
