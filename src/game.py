@@ -257,7 +257,7 @@ class Game:
         elif self.path_searcher.longest_path:
             for block in self.path_searcher.longest_path:
                 color: tuple[int, int, int] = (255, 0, 0, 100)
-                x, y = self.block_pos_relative((block.x, block.y))
+                x, y = self.block_pos_relative((block[0], block[1]))
                 pygame.draw.rect(self.path_canvas, color, (x, y, self.block_size, self.block_size))
         
     def draw_exit(self) -> None:

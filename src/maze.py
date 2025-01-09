@@ -80,7 +80,6 @@ class Maze:
                 if self.algorithm_visualisation:
                     self.visualise(50, current_cell)
 
-        self.save_as_image(f"example/example4_{self.screen_width}x{self.screen_height}")
         
     def check_pygame_exit(self) -> bool:
         for event in pygame.event.get():
