@@ -238,7 +238,7 @@ class Game:
     def update_apple_count_canvas(self) -> None:
         self.apple_count_canvas.fill((0, 0, 0, 0))
         if len(self.apples) == 0:
-            self.exit = self.create_exit() 
+            self.create_exit() 
             return        
         font: pygame.font.Font = pygame.font.Font(None, self.screen_width)
         text: pygame.Surface = font.render(f"{len(self.apples)}", True, self.colors["text"][:3])
@@ -302,8 +302,6 @@ class Game:
         self.update_apple_count_canvas()
 
         while running:
-            if len(self.path_searcher.path) < 2:
-                self.path_searcher.create_path(self.snake, self.apples)
                 
             self.screen.fill(pygame.Color(self.colors["maze_path"]))
 
@@ -324,13 +322,16 @@ class Game:
 
             self.snake.check_snake_collision(snake_block, next_block)
             self.snake.move()
-            
+            if self.apples:
+                self.path_searcher.create_path(self.snake, self.apples)
+            else:
+                self.path_searcher.create_path(self.snake, self.exit_blocks)
+                
             if self.snake.check_apples_collision(self.apples):
                 self.update_apple_count_canvas()
-                self.path_searcher.path = []
             if self.snake.lost():
                 running = False
-
+            
             self.screen.fill(pygame.Color(self.colors["maze_path"]))
 
             self.update_world_canvas()

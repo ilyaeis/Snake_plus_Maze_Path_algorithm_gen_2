@@ -8,7 +8,7 @@
     "blocks_in_cell": 10,
     "block_size_px": 20,
 
-    "apple_count": 10,
+    "apple_count": 0,
     "tree_size": 3,
 
     "locations": {

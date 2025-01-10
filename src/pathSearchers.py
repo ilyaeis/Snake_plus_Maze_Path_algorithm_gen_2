@@ -9,14 +9,15 @@ class BFS:
         self.path: list[tuple[int, int]] = []
         self.longest_path: list[tuple[int, int]] = []
         self.snake_values: set[tuple[int, int]] = set()
-        self.apple_values: set[tuple[int, int]] = set()
+        self.target_values: set[tuple[int, int]] = set()
         
     def get_snake_values(self, snake: Snake):
         for block in snake.body:
             self.snake_values.add((block.x, block.y))
-    def get_apple_values(self, apples: list[Apple]):
-        for apple in apples:
-            self.apple_values.add((apple.x, apple.y))
+            
+    def get_target_values(self, targets: list[any]):
+        for block in targets:
+            self.target_values.add((block.x, block.y))
                 
     def check_bounds(self, position: tuple[int, int]) -> bool:
         return (0 <= position[0] < self.bounds[0] and
@@ -46,11 +47,11 @@ class BFS:
         
         return True
         
-    def create_path(self, snake: Snake, apples: list[Apple]):
+    def create_path(self, snake: Snake, targets: list[any]):
         self.path = []
         self.longest_path = []
         self.get_snake_values(snake)
-        self.get_apple_values(apples)
+        self.get_target_values(targets)
         
         start: tuple[int, int] = (snake.body[0].x, snake.body[0].y)
         directions: list[tuple[int, int]] = [(1, 0), (-1, 0), (0, 1), (0, -1)]
@@ -73,7 +74,7 @@ class BFS:
                 farthest_node = current_node
                 max_depth = depth
 
-            if current_position in self.apple_values:
+            if current_position in self.target_values:
                 while current_node is not None:
                     self.path.append(current_node.position)
                     current_node = current_node.parent
